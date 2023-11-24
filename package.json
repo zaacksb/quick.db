@@ -30,6 +30,7 @@
         "typescript": "^5.1.6"
     },
     "peerDependencies": {
+        "async-lock": "1.4.x",
         "better-sqlite3": "8.x || 9.x",
         "cassandra-driver": "4.x",
         "mongoose": "7.x || 8.x",
@@ -53,11 +54,15 @@
         "write-file-atomic": {
             "optional": true
         },
+        "async-lock": {
+            "optional": true
+        },
         "cassandra-driver": {
             "optional": true
         }
     },
     "dependencies": {
+        "@types/async-lock": "^1.4.2",
         "lodash": "^4.17.21"
     },
     "exports": {

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 import { readFile } from "fs/promises";
 import writeFile from "write-file-atomic";
+import AsyncLock from "async-lock";
 
 import { MemoryDriver } from "./MemoryDriver";
 
@@ -22,8 +23,19 @@ export type DataLike<T = any> = { id: string; value: T };
  * ```
  **/
 export class JSONDriver extends MemoryDriver {
-    public constructor(public path = "./quickdb.json") {
+    private lock: AsyncLock;
+    private replacer: ((this: any, key: string, value: any) => any) | undefined;
+    private space: string | number | undefined;
+    public constructor(
+        public path = "./quickdb.json",
+        asyncLockOptions?: AsyncLock.AsyncLockOptions,
+        replacer?: (this: any, key: string, value: any) => any,
+        space?: string | number | undefined
+    ) {
         super();
+        this.replacer = replacer;
+        this.space = space;
+        this.lock = new AsyncLock(asyncLockOptions);
         // synchronously load contents before initializing
         this.loadContentSync();
     }
@@ -80,7 +92,19 @@ export class JSONDriver extends MemoryDriver {
 
     public async snapshot(): Promise<void> {
         const data = await this.export();
-        await writeFile(this.path, JSON.stringify(data));
+        return new Promise((reoslve) => {
+            this.lock
+                .acquire("writedb", async (cb) => {
+                    await writeFile(
+                        this.path,
+                        JSON.stringify(data, this.replacer, this.space)
+                    );
+                    cb(null, true);
+                })
+                .then(() => {
+                    reoslve();
+                });
+        });
     }
 
     public override async deleteAllRows(table: string): Promise<number> {
