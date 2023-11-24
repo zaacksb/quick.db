@@ -1,5 +1,5 @@
 {
-    "name": "quick.db",
+    "name": "@zacksb/quick.db",
     "version": "9.1.6",
     "description": "An easy, non-locking, persistent better-sqlite3 wrapper designed to be easy to setup & utilize",
     "main": "out/index.js",
@@ -11,6 +11,7 @@
         "@commitlint/cli": "^18.0.0",
         "@commitlint/config-conventional": "^18.0.0",
         "@faker-js/faker": "^8.0.0",
+        "@types/async-lock": "^1.4.2",
         "@types/better-sqlite3": "^7.4.2",
         "@types/jest": "^29.0.0",
         "@types/lodash": "^4.14.178",
@@ -62,7 +63,6 @@
         }
     },
     "dependencies": {
-        "@types/async-lock": "^1.4.2",
         "lodash": "^4.17.21"
     },
     "exports": {
